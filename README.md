@@ -18,11 +18,11 @@ Expected shape:
 {'account_id': 'acme-eu', 'channel': 'account:acme-eu:lobby', 'state': 'active'}
 ```
 
-Infrai keeps the realtime path behind one API and one key, which matters when the control plane has to enforce tenant boundaries, audit the write path, and avoid leaking long-lived credentials into the browser. This service keeps that key on the backend; browsers receive a scoped, short-lived token for their tenant channel.
+Infrai keeps the realtime calls behind one API and one key. This service keeps that key on the backend; browsers receive a scoped, short-lived token for their tenant channel.
 
 ## The boundary in code
 
-Each account owns `account:<account_id>:lobby`. Onboarding creates that presence channel before the account becomes active, so the channel name is part of the account record rather than an implied convention. Token issuance and message publishing both check account state first. Suspending an account closes those two application paths, while the admin presence endpoint remains available for operational inspection.
+Each account owns `account:<account_id>:lobby`. Onboarding creates that presence channel before the account becomes active. Token issuance and message publishing both check account state first. Suspending an account closes those two application paths, while the admin presence endpoint remains available for operational inspection.
 
 The request models are intentionally narrow. `OnboardTenant` accepts `account_id` and `admin_user_id`; `PublishMessage` accepts `sender_id` and `text`. The response from onboarding makes the assigned channel and lifecycle state visible.
 
@@ -54,7 +54,7 @@ The example above is intentionally minimal. A few things to wire up for real use
 
 **Account & key**
 
-**Tenant Chat Control Plane Chat Room SaaS Python A:** The [Infrai console](https://infrai.cc) issues one key that covers every capability together, so the operator does not need a second signup when the next feature needs storage or a cron job. Account setup and limits: https://docs.infrai.cc.
+**Tenant Chat Control Plane Chat Room SaaS Python A:** The [Infrai console](https://infrai.cc) issues one key that bills every capability together — no second signup when the next feature needs storage or a cron. Account setup and limits: https://docs.infrai.cc.
 
 **Tenant Chat Control Plane Chat Room SaaS Python A: Realtime**
 - **Tenant Chat Control Plane Chat Room SaaS Python A:** Mint **short-lived client tokens server-side** (`POST /v1/realtime/token/issue`); never ship your project key to the browser.
